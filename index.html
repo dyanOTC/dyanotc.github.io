@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave a tip?</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="heading">Leave a tip?</h1>
+        
+        <div class="tip-buttons">
+            <button class="tip-btn fly-button">15%</button>
+            <button class="tip-btn fly-button">20%</button>
+            <button class="tip-btn clickable-btn">100%</button>
+        </div>
+        
+        <button class="custom-btn fly-button">Custom</button>
+        
+        <div id="message" class="message"></div>
+    </div>
+    
+    <script>
+        // Get query parameter 'name' from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        
+        // Update heading if name parameter exists
+        if (name) {
+            document.getElementById('heading').textContent = `Leave a tip for ${name}?`;
+        }
+        
+        // Add fly-away effect to buttons that should fly away
+        const flyButtons = document.querySelectorAll('.fly-button');
+        
+        flyButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                // Generate random direction
+                const directions = [
+                    { x: '200vw', y: '-100vh' },  // Top right
+                    { x: '-200vw', y: '-100vh' }, // Top left
+                    { x: '200vw', y: '100vh' },   // Bottom right
+                    { x: '-200vw', y: '100vh' },  // Bottom left
+                    { x: '0', y: '-200vh' },      // Straight up
+                    { x: '0', y: '200vh' }        // Straight down
+                ];
+                
+                const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+                
+                // Set CSS variables for animation
+                button.style.setProperty('--fly-x', randomDirection.x);
+                button.style.setProperty('--fly-y', randomDirection.y);
+                
+                // Add fly-away class
+                button.classList.add('fly-away');
+                
+                // Reset after animation
+                setTimeout(() => {
+                    button.classList.remove('fly-away');
+                    button.style.removeProperty('--fly-x');
+                    button.style.removeProperty('--fly-y');
+                }, 1000);
+            });
+        });
+        
+        // Handle 25% button click
+        const clickableBtn = document.querySelector('.clickable-btn');
+        clickableBtn.addEventListener('click', function() {
+            const messageDiv = document.getElementById('message');
+            const heading = document.getElementById('heading');
+            const tipButtons = document.querySelector('.tip-buttons');
+            const customBtn = document.querySelector('.custom-btn');
+            
+            // Hide heading and buttons
+            heading.style.display = 'none';
+            tipButtons.style.display = 'none';
+            customBtn.style.display = 'none';
+            
+            // Show message
+            messageDiv.textContent = "That's so generous of you";
+            messageDiv.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
