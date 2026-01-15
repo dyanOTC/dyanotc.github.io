@@ -34,7 +34,16 @@
         // Add fly-away effect to buttons that should fly away
         const flyButtons = document.querySelectorAll('.fly-button');
         
+        // Track percentage for 15% and 20% buttons using the button element as key
+        const percentageTracker = new WeakMap();
+        
         flyButtons.forEach(button => {
+            // Store initial percentage
+            const match = button.textContent.match(/\d+/);
+            if (match) {
+                percentageTracker.set(button, parseInt(match[0]));
+            }
+            
             button.addEventListener('mouseenter', function() {
                 // Generate random direction
                 const directions = [
@@ -60,6 +69,14 @@
                     button.classList.remove('fly-away');
                     button.style.removeProperty('--fly-x');
                     button.style.removeProperty('--fly-y');
+                    
+                    // Update percentage for 15% and 20% buttons (tip-btn class)
+                    if (button.classList.contains('tip-btn')) {
+                        let currentValue = percentageTracker.get(button) || 0;
+                        currentValue += 5;
+                        percentageTracker.set(button, currentValue);
+                        button.textContent = currentValue + '%';
+                    }
                 }, 1000);
             });
         });
