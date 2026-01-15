@@ -77,8 +77,21 @@
             tipButtons.style.display = 'none';
             customBtn.style.display = 'none';
             
-            // Show message
-            messageDiv.textContent = "That's so generous of you";
+            // Show random cheeky message
+            const messages = [
+                "That's so generous of you!",
+                "You're the best!",
+                "I knew you'd come around!",
+                "Finally!",
+                "Now we're talking!",
+                "You're too kind!",
+                "I always believed in you!",
+                "Worth the wait!",
+                "My hero! 🎉",
+                "Knew you couldn't resist!"
+            ];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            messageDiv.textContent = randomMessage;
             messageDiv.style.display = 'block';
         });
     </script>
