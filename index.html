@@ -45,6 +45,11 @@
             }
             
             button.addEventListener('mouseenter', function() {
+                // Skip fly-away if button has reached 100%
+                if (button.classList.contains('tip-btn') && percentageTracker.get(button) >= 100) {
+                    return;
+                }
+                
                 // Generate random direction
                 const directions = [
                     { x: '200vw', y: '-100vh' },  // Top right
@@ -79,6 +84,40 @@
                     }
                 }, 1000);
             });
+            
+            // Add click listener for tip buttons that reached 100%
+            if (button.classList.contains('tip-btn')) {
+                button.addEventListener('click', function() {
+                    if (percentageTracker.get(button) >= 100) {
+                        const messageDiv = document.getElementById('message');
+                        const heading = document.getElementById('heading');
+                        const tipButtons = document.querySelector('.tip-buttons');
+                        const customBtn = document.querySelector('.custom-btn');
+                        
+                        // Hide heading and buttons
+                        heading.style.display = 'none';
+                        tipButtons.style.display = 'none';
+                        customBtn.style.display = 'none';
+                        
+                        // Show random cheeky message
+                        const messages = [
+                            "That's so generous of you!",
+                            "You're the best!",
+                            "I knew you'd come around!",
+                            "Finally!",
+                            "Now we're talking!",
+                            "You're too kind!",
+                            "I always believed in you!",
+                            "Worth the wait!",
+                            "My hero! 🎉",
+                            "Knew you couldn't resist!"
+                        ];
+                        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                        messageDiv.textContent = randomMessage;
+                        messageDiv.style.display = 'block';
+                    }
+                });
+            }
         });
         
         // Handle 25% button click
