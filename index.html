@@ -24,7 +24,7 @@
     <script>
         // Get query parameter 'name' from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
+        const name = urlParams.get('name')?.replace(/_/g, ' ');
         
         // Update heading if name parameter exists
         if (name) {
