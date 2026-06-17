@@ -9,147 +9,88 @@
 <body>
     <div class="container">
         <h1 id="heading">Leave a tip?</h1>
-        
+
         <div class="tip-buttons">
             <button class="tip-btn fly-button">15%</button>
             <button class="tip-btn fly-button">20%</button>
             <button class="tip-btn clickable-btn">100%</button>
         </div>
-        
+
         <button class="custom-btn fly-button">Custom</button>
-        
+
         <div id="message" class="message"></div>
     </div>
-    
+
     <script>
-        // Get query parameter 'name' from URL
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name')?.replace(/_/g, ' ');
-        
-        // Update heading if name parameter exists
         if (name) {
             document.getElementById('heading').textContent = `Leave a tip for ${name}?`;
         }
-        
-        // Add fly-away effect to buttons that should fly away
-        const flyButtons = document.querySelectorAll('.fly-button');
-        
-        // Track percentage for 15% and 20% buttons using the button element as key
-        const percentageTracker = new WeakMap();
-        
-        flyButtons.forEach(button => {
-            // Store initial percentage
+
+        const messages = [
+            "That's so generous of you!",
+            "You're the best!",
+            "I knew you'd come around!",
+            "Finally!",
+            "Now we're talking!",
+            "You're too kind!",
+            "I always believed in you!",
+            "Worth the wait!",
+            "My hero! 🎉",
+            "Knew you couldn't resist!"
+        ];
+
+        function showMessage() {
+            document.getElementById('heading').style.display = 'none';
+            document.querySelector('.tip-buttons').style.display = 'none';
+            document.querySelector('.custom-btn').style.display = 'none';
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = messages[Math.floor(Math.random() * messages.length)];
+            messageDiv.style.display = 'block';
+        }
+
+        const directions = [
+            { x: '200vw', y: '-100vh' },
+            { x: '-200vw', y: '-100vh' },
+            { x: '200vw', y: '100vh' },
+            { x: '-200vw', y: '100vh' },
+            { x: '0', y: '-200vh' },
+            { x: '0', y: '200vh' }
+        ];
+
+        document.querySelectorAll('.fly-button').forEach(button => {
             const match = button.textContent.match(/\d+/);
-            if (match) {
-                percentageTracker.set(button, parseInt(match[0]));
-            }
-            
+            if (match) button.dataset.percentage = match[0];
+
             button.addEventListener('mouseenter', function() {
-                // Skip fly-away if button has reached 100%
-                if (button.classList.contains('tip-btn') && percentageTracker.get(button) >= 100) {
-                    return;
-                }
-                
-                // Generate random direction
-                const directions = [
-                    { x: '200vw', y: '-100vh' },  // Top right
-                    { x: '-200vw', y: '-100vh' }, // Top left
-                    { x: '200vw', y: '100vh' },   // Bottom right
-                    { x: '-200vw', y: '100vh' },  // Bottom left
-                    { x: '0', y: '-200vh' },      // Straight up
-                    { x: '0', y: '200vh' }        // Straight down
-                ];
-                
-                const randomDirection = directions[Math.floor(Math.random() * directions.length)];
-                
-                // Set CSS variables for animation
-                button.style.setProperty('--fly-x', randomDirection.x);
-                button.style.setProperty('--fly-y', randomDirection.y);
-                
-                // Add fly-away class
+                if (+button.dataset.percentage >= 100) return;
+
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                button.style.setProperty('--fly-x', dir.x);
+                button.style.setProperty('--fly-y', dir.y);
                 button.classList.add('fly-away');
-                
-                // Reset after animation
-                setTimeout(() => {
-                    button.classList.remove('fly-away');
-                    button.style.removeProperty('--fly-x');
-                    button.style.removeProperty('--fly-y');
-                    
-                    // Update percentage for 15% and 20% buttons (tip-btn class)
-                    if (button.classList.contains('tip-btn')) {
-                        let currentValue = percentageTracker.get(button) || 0;
-                        currentValue += 5;
-                        percentageTracker.set(button, currentValue);
-                        button.textContent = currentValue + '%';
-                    }
-                }, 1000);
             });
-            
-            // Add click listener for tip buttons that reached 100%
+
+            button.addEventListener('transitionend', function(e) {
+                if (!button.classList.contains('fly-away') || e.propertyName !== 'transform') return;
+                button.classList.remove('fly-away');
+                button.style.removeProperty('--fly-x');
+                button.style.removeProperty('--fly-y');
+                if (button.classList.contains('tip-btn')) {
+                    button.dataset.percentage = +button.dataset.percentage + 5;
+                    button.textContent = button.dataset.percentage + '%';
+                }
+            });
+
             if (button.classList.contains('tip-btn')) {
                 button.addEventListener('click', function() {
-                    if (percentageTracker.get(button) >= 100) {
-                        const messageDiv = document.getElementById('message');
-                        const heading = document.getElementById('heading');
-                        const tipButtons = document.querySelector('.tip-buttons');
-                        const customBtn = document.querySelector('.custom-btn');
-                        
-                        // Hide heading and buttons
-                        heading.style.display = 'none';
-                        tipButtons.style.display = 'none';
-                        customBtn.style.display = 'none';
-                        
-                        // Show random cheeky message
-                        const messages = [
-                            "That's so generous of you!",
-                            "You're the best!",
-                            "I knew you'd come around!",
-                            "Finally!",
-                            "Now we're talking!",
-                            "You're too kind!",
-                            "I always believed in you!",
-                            "Worth the wait!",
-                            "My hero! 🎉",
-                            "Knew you couldn't resist!"
-                        ];
-                        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-                        messageDiv.textContent = randomMessage;
-                        messageDiv.style.display = 'block';
-                    }
+                    if (+button.dataset.percentage >= 100) showMessage();
                 });
             }
         });
-        
-        // Handle 25% button click
-        const clickableBtn = document.querySelector('.clickable-btn');
-        clickableBtn.addEventListener('click', function() {
-            const messageDiv = document.getElementById('message');
-            const heading = document.getElementById('heading');
-            const tipButtons = document.querySelector('.tip-buttons');
-            const customBtn = document.querySelector('.custom-btn');
-            
-            // Hide heading and buttons
-            heading.style.display = 'none';
-            tipButtons.style.display = 'none';
-            customBtn.style.display = 'none';
-            
-            // Show random cheeky message
-            const messages = [
-                "That's so generous of you!",
-                "You're the best!",
-                "I knew you'd come around!",
-                "Finally!",
-                "Now we're talking!",
-                "You're too kind!",
-                "I always believed in you!",
-                "Worth the wait!",
-                "My hero! 🎉",
-                "Knew you couldn't resist!"
-            ];
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            messageDiv.textContent = randomMessage;
-            messageDiv.style.display = 'block';
-        });
+
+        document.querySelector('.clickable-btn').addEventListener('click', showMessage);
     </script>
 </body>
 </html>
