@@ -16,7 +16,11 @@
             <button class="tip-btn clickable-btn">100%</button>
         </div>
 
-        <button class="custom-btn fly-button">Custom</button>
+        <button class="custom-btn">Custom</button>
+        <div id="custom-input" style="display:none; margin-top:1rem;">
+            <input type="number" id="custom-pct" placeholder="Enter %" min="1" style="font-size:1.2rem; width:100px; padding:0.3rem;">
+            <button id="custom-go" style="font-size:1.2rem; padding:0.3rem 0.8rem; margin-left:0.5rem;">Go</button>
+        </div>
 
         <div id="message" class="message"></div>
     </div>
@@ -91,6 +95,21 @@
         });
 
         document.querySelector('.clickable-btn').addEventListener('click', showMessage);
+
+        document.querySelector('.custom-btn').addEventListener('click', function() {
+            this.style.display = 'none';
+            const wrap = document.getElementById('custom-input');
+            wrap.style.display = 'block';
+            document.getElementById('custom-pct').focus();
+        });
+
+        function submitCustom() {
+            const val = +document.getElementById('custom-pct').value;
+            if (val >= 100) showMessage();
+        }
+
+        document.getElementById('custom-pct').addEventListener('keydown', e => { if (e.key === 'Enter') submitCustom(); });
+        document.getElementById('custom-go').addEventListener('click', submitCustom);
     </script>
 </body>
 </html>
