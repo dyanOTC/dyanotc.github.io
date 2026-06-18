@@ -112,6 +112,10 @@ h1 {
 
 #custom-go:hover { background-color: #0052cc; }
 
+.message--big {
+    font-size: 2.2rem !important;
+}
+
 .message {
     display: none;
     margin-top: 30px;

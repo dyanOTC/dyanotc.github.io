@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leave a tip?</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -55,7 +56,13 @@
             document.querySelector('.custom-btn').style.display = 'none';
             document.getElementById('custom-input').style.display = 'none';
             const messageDiv = document.getElementById('message');
-            messageDiv.textContent = pct === 200 ? message200 : messages[Math.floor(Math.random() * messages.length)];
+            if (pct === 200) {
+                messageDiv.textContent = message200;
+                messageDiv.classList.add('message--big');
+                confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+            } else {
+                messageDiv.textContent = messages[Math.floor(Math.random() * messages.length)];
+            }
             messageDiv.style.display = 'block';
         }
 
