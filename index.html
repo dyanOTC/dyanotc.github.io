@@ -18,7 +18,7 @@
 
         <button class="custom-btn">Custom</button>
         <div id="custom-input" style="display:none;">
-            <input type="number" id="custom-pct" placeholder="Enter %">
+            <input type="number" id="custom-pct" placeholder="Enter %" autocomplete="off">
             <button id="custom-go">→</button>
         </div>
 
@@ -27,10 +27,14 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name')?.replace(/_/g, ' ');
-        if (name) {
-            document.getElementById('heading').textContent = `Leave a tip for ${name}?`;
+        const reason = urlParams.get('reason')?.replace(/_/g, ' ');
+        if (reason) {
+            document.getElementById('heading').textContent = `Leave a tip for ${reason}?`;
         }
+
+        document.getElementById('custom-pct').value = '';
+
+        const message200 = "200%?! The server just quit their other job, bought a boat, and named it after you.";
 
         const messages = [
             "That's so generous of you!",
@@ -45,12 +49,13 @@
             "Knew you couldn't resist!"
         ];
 
-        function showMessage() {
+        function showMessage(pct) {
             document.getElementById('heading').style.display = 'none';
             document.querySelector('.tip-buttons').style.display = 'none';
             document.querySelector('.custom-btn').style.display = 'none';
+            document.getElementById('custom-input').style.display = 'none';
             const messageDiv = document.getElementById('message');
-            messageDiv.textContent = messages[Math.floor(Math.random() * messages.length)];
+            messageDiv.textContent = pct === 200 ? message200 : messages[Math.floor(Math.random() * messages.length)];
             messageDiv.style.display = 'block';
         }
 
@@ -105,7 +110,7 @@
 
         function submitCustom() {
             const val = +document.getElementById('custom-pct').value;
-            if (val >= 100) showMessage();
+            if (val >= 100) showMessage(val);
         }
 
         let typing = false;
@@ -116,9 +121,9 @@
             const input = this;
             input.value = '';
             ['2', '0', '0'].forEach((ch, i) => {
-                setTimeout(() => { input.value += ch; }, i * 180);
+                setTimeout(() => { input.value += ch; }, i * 500);
             });
-            setTimeout(() => { typing = false; submitCustom(); }, 3 * 180 + 300);
+            setTimeout(() => { typing = false; submitCustom(); }, 3 * 500 + 500);
         });
         document.getElementById('custom-go').addEventListener('click', submitCustom);
     </script>
