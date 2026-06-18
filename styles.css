@@ -76,6 +76,42 @@ h1 {
     pointer-events: none;
 }
 
+#custom-input {
+    display: flex;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#custom-pct {
+    flex: 1;
+    padding: 20px;
+    font-size: 2rem;
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: white;
+    color: #333;
+    min-width: 0;
+}
+
+/* hide number spinner */
+#custom-pct::-webkit-outer-spin-button,
+#custom-pct::-webkit-inner-spin-button { -webkit-appearance: none; }
+#custom-pct { -moz-appearance: textfield; }
+
+#custom-go {
+    background-color: #0066ff;
+    color: white;
+    border: none;
+    padding: 20px 30px;
+    font-size: 2rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+#custom-go:hover { background-color: #0052cc; }
+
 .message {
     display: none;
     margin-top: 30px;
