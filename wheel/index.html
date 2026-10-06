@@ -97,7 +97,8 @@
             messageDiv.style.display = 'none';
 
             rotation += 360 * (5 + Math.floor(Math.random() * 3)) + Math.random() * 360;
-            canvas.style.transition = `transform ${SPIN_MS}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
+            const spinMs = SPIN_MS * (0.9 + Math.random() * 0.2);
+            canvas.style.transition = `transform ${spinMs}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
             canvas.style.transform = `rotate(${rotation}deg)`;
         });
 
