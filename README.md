@@ -1,4 +1,4 @@
-Small static pages, served by GitHub Pages at `/tools/`.
+Small static pages, served by GitHub Pages at `https://dyanotc.github.io/`.
 
 ## Tip (`/tip/`)
 

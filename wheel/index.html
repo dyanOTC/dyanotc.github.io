@@ -83,7 +83,9 @@
         drawWheel();
         window.addEventListener('resize', drawWheel);
 
-        let rotation = 0;
+        // Random resting angle so option 1 isn't always under the pointer on load (cosmetic; odds are already uniform).
+        let rotation = Math.random() * 360;
+        canvas.style.transform = `rotate(${rotation}deg)`;
         let spinning = false;
         const spinBtn = document.getElementById('spin-btn');
         const messageDiv = document.getElementById('message');
