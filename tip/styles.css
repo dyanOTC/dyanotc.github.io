@@ -14,6 +14,18 @@ body {
     padding: 20px;
 }
 
+.home-link {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    color: #555;
+    font-size: 1rem;
+    text-decoration: none;
+    z-index: 10;
+}
+
+.home-link:hover { color: #0066ff; }
+
 .container {
     background-color: #e8e8e8;
     max-width: 500px;
