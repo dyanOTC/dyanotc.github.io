@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave a tip?</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="heading">Leave a tip?</h1>
+
+        <div class="tip-buttons">
+            <button class="tip-btn fly-button">15%</button>
+            <button class="tip-btn fly-button">20%</button>
+            <button class="tip-btn clickable-btn">100%</button>
+        </div>
+
+        <button class="custom-btn">Custom</button>
+        <div id="custom-input" style="display:none;">
+            <input type="number" id="custom-pct" placeholder="Enter %" autocomplete="off">
+            <button id="custom-go">→</button>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const reason = urlParams.get('reason')?.replace(/_/g, ' ');
+        if (reason) {
+            document.getElementById('heading').textContent = `Leave a tip for ${reason}?`;
+        }
+
+        document.getElementById('custom-pct').value = '';
+
+        const message200 = "200%?! I'm going to buy a boat, and name it after you.";
+
+        const messages = [
+            "That's so generous of you!",
+            "You're the best!",
+            "I knew you'd come around!",
+            "Finally!",
+            "Now we're talking!",
+            "You're too kind!",
+            "I always believed in you!",
+            "Worth the wait!",
+            "My hero! 🎉",
+            "Knew you couldn't resist!"
+        ];
+
+        function showMessage(pct) {
+            document.getElementById('heading').style.display = 'none';
+            document.querySelector('.tip-buttons').style.display = 'none';
+            document.querySelector('.custom-btn').style.display = 'none';
+            document.getElementById('custom-input').style.display = 'none';
+            const messageDiv = document.getElementById('message');
+            if (pct === 200) {
+                messageDiv.textContent = message200;
+                messageDiv.classList.add('message--big');
+                confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+            } else {
+                messageDiv.textContent = messages[Math.floor(Math.random() * messages.length)];
+            }
+            messageDiv.style.display = 'block';
+        }
+
+        const directions = [
+            { x: '200vw', y: '-100vh' },
+            { x: '-200vw', y: '-100vh' },
+            { x: '200vw', y: '100vh' },
+            { x: '-200vw', y: '100vh' },
+            { x: '0', y: '-200vh' },
+            { x: '0', y: '200vh' }
+        ];
+
+        document.querySelectorAll('.fly-button').forEach(button => {
+            const match = button.textContent.match(/\d+/);
+            if (match) button.dataset.percentage = match[0];
+
+            button.addEventListener('mouseenter', function() {
+                if (+button.dataset.percentage >= 100) return;
+
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                button.style.setProperty('--fly-x', dir.x);
+                button.style.setProperty('--fly-y', dir.y);
+                button.classList.add('fly-away');
+            });
+
+            button.addEventListener('transitionend', function(e) {
+                if (!button.classList.contains('fly-away') || e.propertyName !== 'transform') return;
+                button.classList.remove('fly-away');
+                button.style.removeProperty('--fly-x');
+                button.style.removeProperty('--fly-y');
+                if (button.classList.contains('tip-btn')) {
+                    button.dataset.percentage = +button.dataset.percentage + 5;
+                    button.textContent = button.dataset.percentage + '%';
+                }
+            });
+
+            if (button.classList.contains('tip-btn')) {
+                button.addEventListener('click', function() {
+                    if (+button.dataset.percentage >= 100) showMessage();
+                });
+            }
+        });
+
+        document.querySelector('.clickable-btn').addEventListener('click', showMessage);
+
+        document.querySelector('.custom-btn').addEventListener('click', function() {
+            this.style.display = 'none';
+            const wrap = document.getElementById('custom-input');
+            wrap.style.display = 'block';
+            document.getElementById('custom-pct').focus();
+        });
+
+        function submitCustom() {
+            const val = +document.getElementById('custom-pct').value;
+            if (val >= 100) showMessage(val);
+        }
+
+        let typing = false;
+        document.getElementById('custom-pct').addEventListener('keydown', function(e) {
+            e.preventDefault();
+            if (typing) return;
+            typing = true;
+            const input = this;
+            input.value = '';
+            ['2', '0', '0'].forEach((ch, i) => {
+                setTimeout(() => { input.value += ch; }, i * 500);
+            });
+            setTimeout(() => { typing = false; submitCustom(); }, 3 * 500 + 500);
+        });
+        document.getElementById('custom-go').addEventListener('click', submitCustom);
+    </script>
+</body>
+</html>

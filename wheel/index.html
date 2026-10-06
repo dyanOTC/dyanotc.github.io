@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin the wheel</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="heading">Spin the wheel</h1>
+
+        <div class="wheel-wrap">
+            <div class="pointer"></div>
+            <canvas id="wheel"></canvas>
+        </div>
+
+        <button id="spin-btn" class="spin-btn">Spin</button>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const MAX_OPTIONS = 50;
+        const SPIN_MS = 5000;
+        const COLORS = ['#0066ff', '#ff6b35', '#2ec4b6', '#e71d36', '#9b5de5', '#f4a261', '#3a86ff', '#06d6a0'];
+
+        // Accepts ?options=a,b,c and/or repeated ?options=a&options=b; underscores become spaces.
+        const urlParams = new URLSearchParams(window.location.search);
+        const parsed = urlParams.getAll('options')
+            .flatMap(v => v.split(','))
+            .map(v => v.replace(/_/g, ' ').trim())
+            .filter(Boolean)
+            .slice(0, MAX_OPTIONS);
+        const options = parsed.length >= 2 ? parsed : ['Yes', 'No'];
+
+        const title = urlParams.get('title')?.replace(/_/g, ' ');
+        if (title) {
+            document.getElementById('heading').textContent = title;
+            document.title = title;
+        }
+
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const arc = (2 * Math.PI) / options.length;
+
+        function drawWheel() {
+            const size = canvas.clientWidth;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const r = size / 2;
+            const fontSize = Math.max(10, Math.min(22, 280 / options.length));
+            ctx.font = `500 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+
+            options.forEach((label, i) => {
+                // Segment 0 starts at 12 o'clock, where the pointer sits.
+                const start = i * arc - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(r, r);
+                ctx.arc(r, r, r, start, start + arc);
+                ctx.closePath();
+                // Avoid two adjacent segments sharing a color when the count wraps.
+                let colorIdx = i % COLORS.length;
+                if (i === options.length - 1 && colorIdx === 0 && options.length > 1) colorIdx = 1;
+                ctx.fillStyle = COLORS[colorIdx];
+                ctx.fill();
+
+                ctx.save();
+                ctx.translate(r, r);
+                ctx.rotate(start + arc / 2);
+                ctx.fillStyle = 'white';
+                ctx.fillText(label, r - 16, 0, r * 0.75);
+                ctx.restore();
+            });
+        }
+
+        drawWheel();
+        window.addEventListener('resize', drawWheel);
+
+        let rotation = 0;
+        let spinning = false;
+        const spinBtn = document.getElementById('spin-btn');
+        const messageDiv = document.getElementById('message');
+
+        spinBtn.addEventListener('click', function() {
+            if (spinning) return;
+            spinning = true;
+            spinBtn.disabled = true;
+            messageDiv.style.display = 'none';
+
+            rotation += 360 * (5 + Math.floor(Math.random() * 3)) + Math.random() * 360;
+            canvas.style.transition = `transform ${SPIN_MS}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
+            canvas.style.transform = `rotate(${rotation}deg)`;
+        });
+
+        canvas.addEventListener('transitionend', function(e) {
+            if (e.propertyName !== 'transform' || !spinning) return;
+            spinning = false;
+            spinBtn.disabled = false;
+
+            // Wheel turned clockwise by `rotation`; the pointer now sits over the wheel angle -rotation.
+            const landed = ((360 - (rotation % 360)) % 360) * Math.PI / 180;
+            const winner = options[Math.floor(landed / arc) % options.length];
+
+            messageDiv.textContent = winner;
+            messageDiv.style.display = 'block';
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        });
+    </script>
+</body>
+</html>
